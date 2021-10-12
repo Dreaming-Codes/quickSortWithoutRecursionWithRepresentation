@@ -47,15 +47,14 @@ void swapIntPointers(int *n1, int *n2) {
  * @param endIndex Dove arrivare a controllare i valori (il valore a questo indice verrà usato come pivot)
  * @return Nuovo indice del pivot
  */
-uint32_t pivotSort(vector<int> *numbers, uint32_t startIndex, uint32_t endIndex) {
+int pivotSort(vector<int> *numbers, int startIndex, int endIndex) {
     //Prendo il valore del pivot dall'elemento situato a endIndex
     int pivot = numbers->at(endIndex);
 
-    //ancora non è l'indice del pivot ma a fine iterazioni i = startIndex; i < endIndex; i++ lo sarà
-    uint32_t pivotIndex = startIndex;
+    int pivotIndex = startIndex;
 
     //Itero fra tutti gli elementi apparte l'ultimo elemento per evitare il pivot alla prima iterazione
-    for (uint32_t i = startIndex; i < endIndex; i++) {
+    for (int i = startIndex; i < endIndex; i++) {
         if (numbers->at(i) <= pivot) {
             swapIntPointers(&numbers->at(i), &numbers->at(pivotIndex));
             pivotIndex++;
@@ -73,15 +72,19 @@ uint32_t pivotSort(vector<int> *numbers, uint32_t startIndex, uint32_t endIndex)
  * @param numbers Puntatore al vettore contenente i numeri da ordinare
  */
 void quickSortWithoutRecursion(vector<int> *numbers) {
-    //Stack contentenente la pair di valori di inzio e di fine fra cui effettuare il pivotSort
-    stack<pair<uint32_t, uint32_t>> indexToOrder;
+    //Ignoro se c'è un solo elemento o è vuoto
+    if(numbers->size() <= 1){
+        return;
+    }
 
-    uint32_t startIndex = 0;
-    uint32_t endIndex = numbers->size() - 1;
+    //Stack contentenente la pair di valori di inzio e di fine fra cui effettuare il pivotSort
+    stack<pair<int, int>> indexToOrder;
+
+    int startIndex = 0;
+    int endIndex = (int) numbers->size() - 1;
 
     indexToOrder.push(make_pair(startIndex, endIndex));
 
-    //Finche lo stack non è vuoto continuo a iterare fra gli indici contenuti nelle pair nello stack
     while (!indexToOrder.empty()) {
         startIndex = indexToOrder.top().first;
         endIndex = indexToOrder.top().second;
@@ -90,14 +93,12 @@ void quickSortWithoutRecursion(vector<int> *numbers) {
         indexToOrder.pop();
 
         //Posiziono il pivotIndex
-        uint32_t pivotIndex = pivotSort(numbers, startIndex, endIndex);
+        int pivotIndex = pivotSort(numbers, startIndex, endIndex);
 
-        //Inserisco i valori minori del pivot attuale nello stack (-1 viene fatto per non considerare l'attuale pivot)
         if (pivotIndex - 1 > startIndex) {
             indexToOrder.push(make_pair(startIndex, pivotIndex - 1));
         }
 
-        //Inserisco i valori maggiari del pivot attuale nello stack (+1 viene fatto per non considerare l'attuale pivot)
         if (pivotIndex + 1 < endIndex) {
             indexToOrder.push(make_pair(pivotIndex + 1, endIndex));
         }
@@ -110,11 +111,13 @@ int main() {
     getNumbers(&numbers);
 
     //Ordino
+    //0 perché è l'inzio e si vuole oridnare la totalità del vettore numbers.size()-1 perché è la fine del vettore
     quickSortWithoutRecursion(&numbers);
 
     //Stampo
     for (const auto &item: numbers) {
         cout << item << endl;
     }
+    system("PAUSE");
     return 0;
 }
